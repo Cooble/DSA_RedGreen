@@ -1,7 +1,6 @@
 #
-# *** Demo 3
-# Create N backend nodes and 1 frontend node working as a load-balancer.
-#
+# *** Red Green Cluster ***
+
 
 VAGRANTFILE_API_VERSION = "2"
 # set docker as the default provider
@@ -19,20 +18,21 @@ unless Vagrant.has_plugin?("vagrant-docker-compose")
 end
 
 # Names of Docker images built:
-BACKEND_IMAGE  = "ds/demo-3/backend:0.1"
+NODE_IMAGE  = "ds/clusternode:0.1"
 
 # Node definitions
           
-BACKENDS  = { :nameprefix => "backend-",  # backend nodes get names: backend-1, backend-2, etc.
+NODES  = { :nameprefix => "node-",  # backend nodes get names: backend-1, backend-2, etc.
               :subnet => "10.0.1.",
               :ip_offset => 100,  # backend nodes get IP addresses: 10.0.1.101, .102, .103, etc
-              :image => BACKEND_IMAGE,
+              :image => NODE_IMAGE,
               :port => 5000 }
 # Number of backend to start:
-BACKENDS_COUNT = 10
+NODES_COUNT = 10
 
 # Common configuration
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  #config.vm.synced_folder '.', '/vagrant', disabled: true
 
   # Before the 'vagrant up' command is started, build docker images:
   config.trigger.before :up, type: :command do |trigger|
@@ -42,29 +42,33 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Build load balancer configuration file:
       # Build image for backend nodes:
       puts "Building backend node image:"
-      `docker build backend -t "#{BACKEND_IMAGE}"`
+      `docker build node -t "#{NODE_IMAGE}"`
       # Build image for the frontend node:
     
       # --- end of Ruby script ---
     end
   end
 
-  config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ".*/"
+  #config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ".*/"
   config.ssh.insert_key = false
 
   # Definition of N backends
-  (1..BACKENDS_COUNT).each do |i|
-    node_ip_addr = "#{BACKENDS[:subnet]}#{BACKENDS[:ip_offset] + i}"
-    node_name = "#{BACKENDS[:nameprefix]}#{i}"
-    # Definition of BACKEND
+  (1..NODES_COUNT).each do |i|
+    node_ip_addr = "#{NODES[:subnet]}#{NODES[:ip_offset] + i}"
+    node_name = "#{NODES[:nameprefix]}#{i}"
+    # Definition of NODE
+    #config.vm.synced_folder '.', '/vagrant', disabled: true
     config.vm.define node_name do |s|
       s.vm.network "private_network", ip: node_ip_addr
       s.vm.hostname = node_name
       s.vm.provider "docker" do |d|
-        d.build_dir = "backend"
-        d.build_args = ["-t", "#{BACKENDS[:image]}"]
+        d.build_dir = "node"
+        d.build_args = ["-t", "#{NODES[:image]}"]
         d.name = node_name
         d.has_ssh = true
+        # Forward port for the first backend node
+        d.ports = ["8080:8080"] if i == 1
+        #config.vm.network "forwarded_port", guest: 8080, host: 4569, host_ip: "127.0.0.1", protocol: "tcp" if i == 1
       end
       s.vm.post_up_message = "Node #{node_name} up and running. You can access the node with 'vagrant ssh #{node_name}'"
     end
