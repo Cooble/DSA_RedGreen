@@ -2,7 +2,7 @@
 
 This project implements a node coloring algorithm for a distributed system. The algorithm ensures that the ratio of nodes in two states is maintained according to a predefined ratio.
 
-All nodes are symmetric, all are running simple http server. However, only first node has set port forwarding in Vagrantfile, so only first node server is accessible from host machine. 
+All nodes are symmetric, all are running simple http server. **However, only first node has set port forwarding in Vagrantfile, so only first node http server is accessible from host machine.** 
 
 ####  Link to the first node:
 [http://localhost:8080/](http://localhost:8080/)
@@ -35,7 +35,7 @@ Written in C++, CMake. Compiled in separate `gcc:latest` container and finally c
 # Discussion
 - The algorithm is simple and works well for small number of nodes.
 - Alg. does not scale for larger amount of nodes, which would lead to huge traffic (that could be somewhat mitigated by increasing heartbeat interval and timeout).
-- Code does not scale for more than two states.
+- Code does not scale for more than two states (RED/GREEN).
 
 #### Example of server output:
 ![alt text](image.png)
