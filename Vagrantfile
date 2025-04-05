@@ -67,7 +67,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         d.name = node_name
         d.has_ssh = true
         # Forward port for the first backend node
-        d.ports = ["8080:8080"] if i == 1
+        d.ports = ["#{NODES[:port] + i - 1}:8080"]
         #config.vm.network "forwarded_port", guest: 8080, host: 4569, host_ip: "127.0.0.1", protocol: "tcp" if i == 1
       end
       s.vm.post_up_message = "Node #{node_name} up and running. You can access the node with 'vagrant ssh #{node_name}'"

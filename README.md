@@ -2,10 +2,10 @@
 
 This project implements a node coloring algorithm for a distributed system. The algorithm ensures that the ratio of nodes in two states is maintained according to a predefined ratio.
 
-All nodes are symmetric, all are running simple http server. **However, only first node has set port forwarding in Vagrantfile, so only first node http server is accessible from host machine.** 
+All nodes are symmetric, all are running simple http server. 
 
 ####  Link to the first node:
-[http://localhost:8080/](http://localhost:8080/)
+[http://localhost:5001/](http://localhost:5001/)
 
 
 ## Principle

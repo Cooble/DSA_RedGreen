@@ -20,7 +20,6 @@ WORKDIR /cpp
 
 # Copy the built binary from the builder stage
 COPY --from=builder /cpp/build/helloworld .
-COPY --from=builder /cpp/document.html .
 
 #COPY --from=builder /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /usr/lib64/
 #RUN yum install -y libstdc++ 

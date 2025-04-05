@@ -177,7 +177,7 @@ private:
     void print_clients()
     {
         std::cout << "'\nState: ";
-        std::cout << (state=='A' ? "🔴\n" : "🟢\n"); 
+        std::cout << (state=='A' ? "🔴\n" : "🟢\n")<<std::endl; 
 
         // no need to print all clients, html server will do that
     //    std::lock_guard<std::mutex> lock(clients_mutex);
